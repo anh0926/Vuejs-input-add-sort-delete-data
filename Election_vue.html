@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8">
+        <title>Candidate Management System</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+ 
+    </head>
+    <body>      
+        <h1 class="text-center">Candidate Information</h1>
+
+        <div id="app">    
+
+            <div class="container">                
+              <div >
+                <label for="firstName">First Name</label>
+                <input v-model="firstName" required type="text"  class="form-control" placeholder="Mike" aria-label="Candidate's name" aria-describedby="basic-addon2">
+              </div>  
+
+              <div >
+                <label for="lastName">Last Name</label>
+                <input v-model="lastName" required type="text"  class="form-control" placeholder="Hoang" aria-label="Candidate's name" aria-describedby="basic-addon2">
+              </div> 
+
+              <div>
+                <label for="totalVote">Total votes</label>  
+                <input v-model.number="vote" type="number" class="form-control" id="totalVote" placeholder="totalVote" min="0">
+                    
+              </div> 
+              <br>    
+
+              <div class="d-flex justify-content-between">
+                <button v-on:click= "addCandidate" class="btn btn-primary" type="submit">Add</button>  
+                <button v-on:click= "sortbyName" class="btn btn-primary" type="submit">sort by name</button>    
+                <button v-on:click= "sortByVote" class="btn btn-primary" type="submit">sort by vote</button> 
+              </div> 
+              <br><br>
+
+              <div>
+                <p class="fw-bold">Candidate list</p>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Id</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Vote</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(aCandidate, index) in allCandidates" v-bind:key="index">
+                      <td scope="row">{{aCandidate.id}}</td>
+                      <td>{{aCandidate.firstName}} {{aCandidate.lastName}}</td>
+                      <td>{{aCandidate.vote}}</td>
+                      <td ><i v-on:click="removeCandidate(index)" class="bi bi-trash"></i></td>
+                    </tr>                                             
+                  </tbody>
+                </table>
+              </div>
+            </div>            
+        </div>
+
+        <script >
+    const app = new Vue({
+    // 1.	Create a whole that acts as a Facade for parts
+    el: '#app',
+    data: {
+        firstName: '',
+        lastName: '',
+        vote:0,
+        percentVote:0,
+        allCandidates: JSON.parse(localStorage.getItem("election")||'[]') //load data from local storage with key='election' 
+    },
+
+    methods:{
+      //Add a part 
+        addCandidate(){
+          const id = this.allCandidates.length + 1 
+          var firstName = this.firstName.trim()
+          if (!firstName) {
+            confirm ("you must enter a first name")
+            return
+          }   
+
+          var lastName = this.lastName.trim()
+          if (!lastName) {
+            confirm ("you must enter a last name")
+            return
+          }   
+          let aCandidate= ({id: id, firstName:this.firstName, lastName: this.lastName, vote:this.vote})
+          this.allCandidates.push(aCandidate);   
+          this.clearForm()
+          this.saveData()
+        },
+
+        //Sort parts 
+        sortbyName(){
+          this.allCandidates.sort(function(a,b){
+            if (a.firstName < b.firstName){
+              return -1
+            }
+            if (a.firstName > b.firstName){
+              return 1
+            }
+            return 0;
+          })
+        },
+
+        //Sort parts 
+        sortByVote(){
+          this.allCandidates.sort(function(a,b){
+            return (a.vote-b.vote);
+          })
+        },
+
+        //Delete a selected part 
+        removeCandidate(index){
+          this.allCandidates.splice(index,1);
+          this.saveData()      
+        },
+
+        //  getVotes () {
+        //   return this.allVotes
+        //   this.saveData()
+        // },          
+        
+        //save data to local storage. 
+        saveData(){
+          localStorage.setItem("election",JSON.stringify(this.allCandidates)); // set key='election'
+        },
+
+        clearData(){
+          localStorage.clear()
+        },  
+
+        clearForm(){
+          this.firstName='',
+          this.lastName='',
+          this.vote=0
+        }               
+      }
+})
+        </script>
+    </body>
+</html>
