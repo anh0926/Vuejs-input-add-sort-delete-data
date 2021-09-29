@@ -1,6 +1,6 @@
 ## OVERVIEW
 
-This is an input form for an election app build in Vue
+This is an input form for an election app build in Vuejs 
 
 ## FEATURES:
 1.	Create a whole that acts as a Facade for parts 
